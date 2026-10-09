@@ -11,10 +11,17 @@ import type { SensorData } from '../types/SensorData';
 type DataMode = 'real' | 'simulation';
 
 const simulationEnabled = __DEV__ || process.env.EXPO_PUBLIC_ENABLE_SENSOR_SIMULATION === 'true';
+const initialMode: DataMode = simulationEnabled && process.env.EXPO_PUBLIC_SENSOR_MODE === 'simulation'
+  ? 'simulation'
+  : 'real';
 
 export default function DashboardScreen() {
-  const [mode, setMode] = useState<DataMode>('real');
-  const [simulation, setSimulation] = useState<{ data: SensorData; receivedAt: Date } | null>(null);
+  const [mode, setMode] = useState<DataMode>(initialMode);
+  const [simulation, setSimulation] = useState<{ data: SensorData; receivedAt: Date | null } | null>(() =>
+    initialMode === 'simulation'
+      // Keep the initial web render deterministic; timestamp starts on the first update.
+      ? { data: createSimulatedSensorData(0), receivedAt: null }
+      : null);
   const [status, setStatus] = useState<MQTTStatus>('connecting');
   const [realSensors, setRealSensors] = useState<SensorData | null>(null);
   const [lastRealReceived, setLastRealReceived] = useState<Date | null>(null);
