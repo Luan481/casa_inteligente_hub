@@ -1,3 +1,4 @@
+import { colors } from '../theme/colors';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -67,8 +68,8 @@ export default function DashboardScreen() {
     setMode(nextMode);
   }
 
-  const motionColor = !sensors ? '#64748B' : sensors.movimento ? '#DC2626' : '#16A34A';
-  const motionBackground = !sensors ? '#F1F5F9' : sensors.movimento ? '#FEE2E2' : '#DCFCE7';
+  const motionColor = !sensors ? colors.text : sensors.movimento ? colors.danger : colors.primaryDark;
+  const motionBackground = !sensors ? colors.neutralSoft : sensors.movimento ? colors.dangerSoft : colors.primarySoft;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -125,9 +126,9 @@ export default function DashboardScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sensores</Text>
-          <SensorCard icon="📏" title="Distância" value={sensors?.distancia.toFixed(1) ?? '—'} unit="cm" color="#6366F1" />
-          <SensorCard icon="🌡️" title="Temperatura" value={sensors?.temperatura.toFixed(1) ?? '—'} unit="°C" color="#F97316" />
-          <SensorCard icon="💧" title="Umidade" value={sensors?.umidade.toFixed(1) ?? '—'} unit="%" color="#0EA5E9" />
+          <SensorCard icon="📏" title="Distância" value={sensors?.distancia.toFixed(1) ?? '—'} unit="cm" color={colors.primaryDark} />
+          <SensorCard icon="🌡️" title="Temperatura" value={sensors?.temperatura.toFixed(1) ?? '—'} unit="°C" color={colors.primaryDark} />
+          <SensorCard icon="💧" title="Umidade" value={sensors?.umidade.toFixed(1) ?? '—'} unit="%" color={colors.primaryDark} />
 
           <View style={styles.motionCard}>
             <View style={styles.motionContent}>
@@ -159,44 +160,44 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F8FAFC' },
+  safeArea: { flex: 1, backgroundColor: colors.background },
   container: { padding: 20, paddingBottom: 40 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
-  title: { fontSize: 30, fontWeight: '800', color: '#0F172A' },
-  subtitle: { fontSize: 15, color: '#64748B', marginTop: 3 },
+  title: { fontSize: 30, fontWeight: '800', color: colors.title },
+  subtitle: { fontSize: 15, color: colors.text, marginTop: 3 },
   espIcon: { fontSize: 36 },
   sourceControl: {
-    backgroundColor: '#FFFFFF', padding: 16, borderRadius: 16,
-    borderWidth: 1, borderColor: '#E2E8F0', marginBottom: 16, gap: 8,
+    backgroundColor: colors.surface, padding: 16, borderRadius: 16,
+    borderWidth: 1, borderColor: colors.border, marginBottom: 16, gap: 8,
   },
-  sourceLabel: { fontSize: 13, color: '#64748B' },
-  sourceValue: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
+  sourceLabel: { fontSize: 13, color: colors.text },
+  sourceValue: { fontSize: 16, fontWeight: '700', color: colors.title },
   modeButton: {
-    backgroundColor: '#4F46E5', borderRadius: 10, padding: 12,
+    backgroundColor: colors.primaryDark, borderRadius: 10, padding: 12,
     minHeight: 48, alignItems: 'center', justifyContent: 'center', marginTop: 4,
   },
-  modeButtonPressed: { opacity: 0.75 },
-  modeButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '600' },
+  modeButtonPressed: { backgroundColor: colors.primaryDark, opacity: 0.85 },
+  modeButtonText: { color: colors.surface, fontSize: 15, fontWeight: '600' },
   simulationBadge: {
-    backgroundColor: '#EDE9FE', paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: colors.primarySoft, paddingHorizontal: 14, paddingVertical: 8,
     borderRadius: 20, alignSelf: 'flex-start',
   },
-  simulationBadgeText: { color: '#5B21B6', fontSize: 13, fontWeight: '600' },
-  notice: { color: '#64748B', marginTop: 12 },
-  error: { color: '#991B1B', marginTop: 12 },
+  simulationBadgeText: { color: colors.primaryDark, fontSize: 13, fontWeight: '600' },
+  notice: { color: colors.text, marginTop: 12 },
+  error: { color: colors.danger, marginTop: 12 },
   section: { marginTop: 30 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: '#0F172A', marginBottom: 15 },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: colors.title, marginBottom: 15 },
   motionCard: {
-    backgroundColor: '#FFFFFF', borderRadius: 20, padding: 20,
+    backgroundColor: colors.surface, borderRadius: 20, padding: 20,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+    shadowColor: colors.shadow, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08, shadowRadius: 10, elevation: 4,
   },
   motionContent: { flex: 1, marginRight: 12 },
-  motionTitle: { fontSize: 15, color: '#64748B', marginBottom: 5 },
+  motionTitle: { fontSize: 15, color: colors.text, marginBottom: 5 },
   motionStatus: { fontSize: 18, fontWeight: '700' },
   motionIcon: { width: 60, height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   motionEmoji: { fontSize: 30 },
   footer: { alignItems: 'center', marginTop: 30 },
-  footerText: { color: '#94A3B8', fontSize: 13 },
+  footerText: { color: colors.text, fontSize: 13 },
 });

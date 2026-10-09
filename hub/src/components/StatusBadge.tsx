@@ -1,3 +1,4 @@
+import { colors } from '../theme/colors';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { MQTTStatus } from '../services/mqtts';
@@ -13,8 +14,8 @@ const labels: Record<MQTTStatus, string> = {
 export default function StatusBadge({ status }: { status: MQTTStatus }) {
   const connected = status === 'connected';
   const waiting = status === 'connecting' || status === 'reconnecting';
-  const color = connected ? '#166534' : waiting ? '#92400E' : '#991B1B';
-  const backgroundColor = connected ? '#DCFCE7' : waiting ? '#FEF3C7' : '#FEE2E2';
+  const color = connected ? colors.primaryDark : waiting ? colors.warning : colors.danger;
+  const backgroundColor = connected ? colors.primarySoft : waiting ? colors.warningSoft : colors.dangerSoft;
 
   return (
     <View style={[styles.container, { backgroundColor }]}>

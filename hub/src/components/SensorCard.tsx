@@ -1,3 +1,4 @@
+import { colors } from '../theme/colors';
 import React from 'react';
 
 import {
@@ -70,7 +71,7 @@ export default function SensorCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
 
     borderRadius: 20,
 
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
 
     alignItems: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
 
     shadowOffset: {
       width: 0,
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
 
-    color: '#64748B',
+    color: colors.text,
 
     marginBottom: 5,
 
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   unit: {
     fontSize: 16,
 
-    color: '#64748B',
+    color: colors.text,
 
     marginLeft: 5,
   },
