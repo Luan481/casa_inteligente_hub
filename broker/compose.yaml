@@ -1,0 +1,17 @@
+# Desenvolvimento em rede local confiável: sem autenticação ou TLS.
+# Não publique essas portas na internet.
+services:
+  hivemq:
+    image: hivemq/hivemq-ce:latest
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8000:8000"
+    environment:
+      HIVEMQ_ALLOW_ALL_CLIENTS: "true"
+    volumes:
+      - ./config.xml:/opt/hivemq/conf/config.xml:ro
+      - hivemq-data:/opt/hivemq/data
+
+volumes:
+  hivemq-data:

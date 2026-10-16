@@ -66,7 +66,7 @@ export function connectMQTT(callbacks: MQTTCallbacks): () => void {
       }
 
       if (!isSensorData(data)) {
-        callbacks.onInvalidMessage?.(new Error('Mensagem ignorada: confira os quatro campos e os tipos das leituras.'));
+        callbacks.onInvalidMessage?.(new Error('Mensagem ignorada: envie distancia (cm, >= 0), temperatura (°C), umidade (0 a 100) como números e movimento como true/false.'));
         return;
       }
 

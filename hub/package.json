@@ -42,6 +42,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "test:mqtt": "node --test scripts/mqtt-config.test.cjs",
     "test:ui": "node ./scripts/start-simulation.cjs --web",
     "test:mobile": "node ./scripts/start-simulation.cjs"
   },

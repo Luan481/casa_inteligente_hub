@@ -2,6 +2,10 @@
 
 Aplicativo de monitoramento de distância, temperatura, umidade e movimento, feito com Expo SDK 57, React Native 0.86, TypeScript e MQTT.js 5.
 
+## Configurar HiveMQ
+
+Veja [HIVEMQ.md](HIVEMQ.md) para configurar o HiveMQ Cloud, usar o broker gratuito local com Docker e gravar o firmware de exemplo do ESP32. O Cloud Serverless gratuito não aceita novos clusters desde 30/09/2026; o guia explica as opções atuais. O procedimento Mosquitto abaixo continua disponível como alternativa.
+
 ## Como funciona
 
 ```text
@@ -196,7 +200,7 @@ O app usa **WebSocket**, portanto `mqtt://IP:1883` não funciona nele. Em uma p�
 
 ## 5. Configurar o ESP32
 
-O firmware não está incluído neste repositório. Nele, configure:
+Há um exemplo para HiveMQ em [firmware/esp32_hivemq](firmware/esp32_hivemq/esp32_hivemq.ino), explicado no [guia HiveMQ](HIVEMQ.md). Para usar outro firmware com o Mosquitto deste procedimento, configure:
 
 | Parâmetro | Valor para este exemplo |
 | --- | --- |
@@ -311,7 +315,7 @@ Foram revisados os arquivos-fonte, configurações, dependências declaradas, sc
 | --- | --- | --- |
 | Alta — configuração local | Na revisão, `hub/.env` estava com a senha MQTT vazia. | Preencher a senha de `hub` em `.env.local` para usar o broker autenticado deste guia. |
 | Alta — ambiente | Node instalado: 22.12.0; o React Native instalado exige pelo menos 22.13.0 na linha 22. | Atualizar o Node antes de instalar, executar ou gerar builds. |
-| Alta — integração | Não há firmware ESP32 nem arquivos de infraestrutura `broker/` versionados. O README anterior citava scripts inexistentes. | Seguir o procedimento manual deste README e validar o firmware; as referências inválidas foram removidas. |
+| Alta — integração | A revisão original não tinha firmware ou infraestrutura. Agora há exemplo ESP32 e Docker HiveMQ em `firmware/` e `broker/`. | Seguir [HIVEMQ.md](HIVEMQ.md) e validar com a placa e o broker. |
 | Média — atualização dos dados | O dashboard marca leituras antigas apenas quando perde a conexão MQTT. | Adicionar timeout de telemetria e disponibilidade do ESP32, por exemplo com Last Will e tópico de status. |
 | Média — idade da medição | `SensorData` não tem timestamp ou identificador do dispositivo; o horário exibido é o de recebimento. | Incluir timestamp de medição e identificação; mensagens retidas podem conter dados antigos. |
 | Média — retomada da conexão | Não há tratamento explícito de retorno do app ao primeiro plano. Recusas de autenticação não têm retry habilitado por `reconnectOnConnackError`. | Validar retomada em Android/iOS; após corrigir credenciais, reiniciar/recarregar o app. |

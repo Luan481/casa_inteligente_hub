@@ -1,5 +1,7 @@
 # Casa inteligente — aplicativo Expo
 
+Para HiveMQ Cloud ou HiveMQ gratuito local com Docker e firmware ESP32, siga [HIVEMQ.md](../HIVEMQ.md).
+
 O guia completo está no [README da raiz](../README.md), incluindo:
 
 - requisitos e execução do aplicativo;
