@@ -2,6 +2,8 @@
 
 Aplicativo de monitoramento de distância, temperatura, umidade e movimento, feito com Expo SDK 57, React Native 0.86, TypeScript e MQTT.js 5.
 
+Também há um [site em Next.js na pasta `next`](next/README.md), com os mesmos sensores, conexão MQTT, simulação, gráfico da sessão e exportação CSV. Para iniciar: `cd next`, `npm ci` e `npm run dev`. Abra http://localhost:3000. Para reutilizar a configuração local do app, execute `npm run config:app` dentro de `next`.
+
 ## Configurar HiveMQ
 
 Veja [HIVEMQ.md](HIVEMQ.md) para configurar o HiveMQ Cloud, usar o broker gratuito local com Docker e gravar o firmware de exemplo do ESP32. O Cloud Serverless gratuito não aceita novos clusters desde 30/09/2026; o guia explica as opções atuais. O procedimento Mosquitto abaixo continua disponível como alternativa.
