@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inspeção Industrial - Esteira</title>
+    <style>
+        :root {
+            --bg-color: #121824;
+            --card-bg: #1c2333;
+            --accent-blue: #007bc7;
+            --accent-green: #28a745;
+            --accent-red: #dc3545;
+            --accent-yellow: #ffc107;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2e384d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; color: #ffffff; }
+        .system-status { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--accent-green); }
+
+        .workspace {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 57px);
+        }
+
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #0b0f19;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            background: #000;
+            overflow: hidden;
+        }
+
+        img#videoStream, canvas#roiCanvas {
+            width: 640px;
+            height: 480px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        canvas#roiCanvas { cursor: crosshair; z-index: 10; }
+
+        .video-instruction {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .sidebar {
+            width: 380px;
+            background-color: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .panel-group {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        label { display: block; font-size: 13px; margin-bottom: 6px; color: var(--text-main); }
+        select {
+            width: 100%;
+            padding: 9px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .mode-switch {
+            display: flex;
+            background: var(--bg-color);
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 9px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+
+        button.action-btn {
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+            width: 100%;
+        }
+
+        button.action-btn:hover { opacity: 0.9; }
+        .btn-correto { background-color: var(--accent-green); }
+        .btn-errado { background-color: var(--accent-red); }
+        .btn-reset { background-color: #6c757d; margin-top: 6px; }
+        .btn-clear { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); margin-top: 8px; }
+
+        .console-log {
+            background-color: #080b11;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            color: #38ef7d;
+            height: 110px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CONTROLE DE QUALIDADE - ESTEIRA INTELIGENTE</h1>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>Online</span>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="video-section">
+            <div class="video-wrapper">
+                <img id="videoStream" src="/video_feed" alt="Camera Stream">
+                <canvas id="roiCanvas" width="640" height="480"></canvas>
+            </div>
+            <div class="video-instruction">
+                💡 1. Desenhe a ROI sobre a esteira | 2. Salve os padrões | 3. Resete a memória se necessário.
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="panel-group">
+                <div class="panel-title">Modo de Operação</div>
+                <div class="mode-switch">
+                    <button id="btnModeTrain" class="mode-btn active" onclick="alterarModo('train')">Treinamento</button>
+                    <button id="btnModeUse" class="mode-btn" onclick="alterarModo('use')">Operação</button>
+                </div>
+            </div>
+
+            <div class="panel-group">
+                <div class="panel-title">Câmera e Área (ROI)</div>
+                <label for="cameraSelect">Dispositivo:</label>
+                <select id="cameraSelect" onchange="mudarCamera(this.value)">
+                    <option value="">Carregando...</option>
+                </select>
+                <button class="action-btn btn-clear" onclick="limparROI()">Redefinir Área (ROI)</button>
+            </div>
+
+            <div id="trainPanel" class="panel-group">
+                <div class="panel-title">Padrões de Referência</div>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+                    Posicione o item na ROI e grave a imagem padrão correspondente:
+                </p>
+                <div class="btn-stack">
+                    <button class="action-btn btn-correto" onclick="salvarReferencia('correto')">Salvar Padrão: CORRETO</button>
+                    <button class="action-btn btn-errado" onclick="salvarReferencia('errado')">Salvar Padrão: ERRADO</button>
+                    <button class="action-btn btn-reset" onclick="resetarMemoria()">Resetar Memória de Testes</button>
+                </div>
+            </div>
+
+            <div class="panel-group" style="flex:1; display:flex; flex-direction:column;">
+                <div class="panel-title">Log do Sistema</div>
+                <div id="consoleLog" class="console-log">
+                    > Sistema inicializado.<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('roiCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let startX, startY, endX, endY;
+
+        function log(msg) {
+            const consoleBox = document.getElementById('consoleLog');
+            consoleBox.innerHTML += `> ${msg}<br>`;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+            isDrawing = true;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            endX = e.clientX - rect.left;
+            endY = e.clientY - rect.top;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#007bc7';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(startX, startY, endX - startX, endY - startY);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            endX = e.clientX - rect.left;
+            endY = e.clientY - rect.top;
+
+            let x = Math.round(Math.min(startX, endX));
+            let y = Math.round(Math.min(startY, endY));
+            let w = Math.round(Math.abs(endX - startX));
+            let h = Math.round(Math.abs(endY - startY));
+
+            if (w < 10 || h < 10) return;
+
+            fetch('/api/set_roi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x, y, w, h })
+            })
+            .then(res => res.json())
+            .then(data => log('Área de Inspeção (ROI) definida.'));
+        });
+
+        function limparROI() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fetch('/api/set_roi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clear: true })
+            })
+            .then(res => res.json())
+            .then(data => log('ROI limpa.'));
+        }
+
+        function alterarModo(modo) {
+            fetch('/api/set_mode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: modo })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('btnModeTrain').classList.toggle('active', modo === 'train');
+                    document.getElementById('btnModeUse').classList.toggle('active', modo === 'use');
+                    document.getElementById('trainPanel').style.display = (modo === 'train') ? 'block' : 'none';
+                    log(`Modo alterado para: ${modo.toUpperCase()}`);
+                } else {
+                    log(`ERRO: ${data.message}`);
+                }
+            });
+        }
+
+        function salvarReferencia(tipo) {
+            fetch(`/api/save_reference/${tipo}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        log(data.message);
+                    } else {
+                        log(`ERRO: ${data.message}`);
+                    }
+                });
+        }
+
+        function resetarMemoria() {
+            if (confirm("Tem certeza que deseja apagar todos os padrões salvos e reiniciar o treinamento?")) {
+                fetch('/api/reset_memory', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            log(data.message);
+                            alterarModo('train'); // Força a volta para o modo treinamento
+                        } else {
+                            log(`ERRO: ${data.message}`);
+                        }
+                    });
+            }
+        }
+
+        window.onload = function() {
+            fetch('/api/cameras')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('cameraSelect');
+                    select.innerHTML = '';
+                    data.cameras.forEach(camId => {
+                        let opt = document.createElement('option');
+                        opt.value = camId;
+                        opt.text = `Câmera ID: ${camId}`;
+                        if (camId === data.current) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                    if (data.mode) alterarModo(data.mode);
+                });
+        };
+
+        function mudarCamera(camId) {
+            fetch(`/api/set_camera/${camId}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    log(`Câmera alterada para ID: ${data.active_camera}`);
+                    document.getElementById('videoStream').src = '/video_feed?' + new Date().getTime();
+                });
+        }
+    </script>
+</body>
+</html>
