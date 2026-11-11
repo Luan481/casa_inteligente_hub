@@ -167,8 +167,117 @@
         button.action-btn:hover { opacity: 0.9; }
         .btn-correto { background-color: var(--accent-green); }
         .btn-errado { background-color: var(--accent-red); }
-        .btn-reset { background-color: #6c757d; margin-top: 6px; }
+        .btn-vazio { background-color: #475569; }
+        .btn-reset { background-color: #334155; margin-top: 6px; }
         .btn-clear { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); margin-top: 8px; }
+
+        /* Cards de Pré-visualização dos Padrões (3 Colunas) */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .ref-card {
+            background: #111622;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ref-card.correto { border-top: 3px solid var(--accent-green); }
+        .ref-card.errado { border-top: 3px solid var(--accent-red); }
+        .ref-card.vazio { border-top: 3px solid #64748b; }
+
+        .ref-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .ref-badge {
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .badge-ok { background: rgba(40, 167, 69, 0.25); color: #4ade80; }
+        .badge-missing { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+
+        .ref-preview-box {
+            width: 100%;
+            height: 75px;
+            background: #06090e;
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ref-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ref-empty-txt {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 4px;
+        }
+
+        /* Status em Tempo Real & Contadores */
+        .status-badge-lg {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .badge-vazio { background: #232c3d; color: #94a3b8; border: 1px solid #334155; }
+        .badge-correto { background: rgba(40, 167, 69, 0.2); color: #4ade80; border: 1px solid var(--accent-green); box-shadow: 0 0 12px rgba(40, 167, 69, 0.3); }
+        .badge-errado { background: rgba(220, 53, 69, 0.2); color: #f87171; border: 1px solid var(--accent-red); box-shadow: 0 0 12px rgba(220, 53, 69, 0.3); }
+        .badge-treino { background: #1a2234; color: #60a5fa; border: 1px dashed var(--accent-blue); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card {
+            background: #111622;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .stat-val { font-size: 18px; font-weight: 700; }
+        .stat-val.green { color: #4ade80; }
+        .stat-val.red { color: #f87171; }
+        .stat-val.muted { color: var(--text-muted); }
+        .stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
 
         .console-log {
             background-color: #080b11;
@@ -178,7 +287,7 @@
             font-family: 'Courier New', Courier, monospace;
             font-size: 11px;
             color: #38ef7d;
-            height: 110px;
+            height: 100px;
             overflow-y: auto;
         }
     </style>
@@ -222,16 +331,77 @@
                 <button class="action-btn btn-clear" onclick="limparROI()">Redefinir Área (ROI)</button>
             </div>
 
+            <div class="panel-group">
+                <div class="panel-title">Status e Produção</div>
+                <div id="liveStatusBadge" class="status-badge-lg badge-treino">MODO TREINAMENTO</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div id="countCorreto" class="stat-val green">0</div>
+                        <div class="stat-lbl">Frango Bom</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="countErrado" class="stat-val red">0</div>
+                        <div class="stat-lbl">Frango Ruim</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="countTotal" class="stat-val muted">0</div>
+                        <div class="stat-lbl">Total</div>
+                    </div>
+                </div>
+                <div style="font-size: 11px; text-align: center; color: var(--text-muted); margin-top: 6px; margin-bottom: 6px;">
+                    Taxa de Aprovação: <b id="taxaAprovado" style="color: #4ade80;">100%</b>
+                </div>
+                <button class="action-btn btn-clear" style="margin-top: 2px;" onclick="zerarContadores()">Zerar Contadores</button>
+            </div>
+
             <div id="trainPanel" class="panel-group">
                 <div class="panel-title">Padrões de Referência</div>
                 <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
-                    Posicione o item na ROI e grave a imagem padrão correspondente:
+                    Capture as 3 referências: Frango Bom, Frango Ruim e Esteira Vazia.
                 </p>
-                <div class="btn-stack">
-                    <button class="action-btn btn-correto" onclick="salvarReferencia('correto')">Salvar Padrão: CORRETO</button>
-                    <button class="action-btn btn-errado" onclick="salvarReferencia('errado')">Salvar Padrão: ERRADO</button>
-                    <button class="action-btn btn-reset" onclick="resetarMemoria()">Resetar Memória de Testes</button>
+
+                <div class="ref-grid">
+                    <!-- Card Frango Bom -->
+                    <div class="ref-card correto">
+                        <div class="ref-header">
+                            <span style="color:#4ade80;">FRANGO BOM</span>
+                            <span id="badgeCorreto" class="ref-badge badge-missing">Não salvo</span>
+                        </div>
+                        <div class="ref-preview-box">
+                            <img id="imgCorreto" src="" alt="Frango Bom" style="display:none;">
+                            <div id="emptyCorreto" class="ref-empty-txt">Sem foto</div>
+                        </div>
+                        <button class="action-btn btn-correto" onclick="salvarReferencia('correto')">Capturar</button>
+                    </div>
+
+                    <!-- Card Frango Ruim -->
+                    <div class="ref-card errado">
+                        <div class="ref-header">
+                            <span style="color:#f87171;">FRANGO RUIM</span>
+                            <span id="badgeErrado" class="ref-badge badge-missing">Não salvo</span>
+                        </div>
+                        <div class="ref-preview-box">
+                            <img id="imgErrado" src="" alt="Frango Ruim" style="display:none;">
+                            <div id="emptyErrado" class="ref-empty-txt">Sem foto</div>
+                        </div>
+                        <button class="action-btn btn-errado" onclick="salvarReferencia('errado')">Capturar</button>
+                    </div>
+
+                    <!-- Card Esteira Vazia -->
+                    <div class="ref-card vazio">
+                        <div class="ref-header">
+                            <span style="color:#94a3b8;">ESTEIRA VAZIA</span>
+                            <span id="badgeVazio" class="ref-badge badge-missing">Não salvo</span>
+                        </div>
+                        <div class="ref-preview-box">
+                            <img id="imgVazio" src="" alt="Esteira Vazia" style="display:none;">
+                            <div id="emptyVazio" class="ref-empty-txt">Sem foto</div>
+                        </div>
+                        <button class="action-btn btn-vazio" onclick="salvarReferencia('vazio')">Capturar</button>
+                    </div>
                 </div>
+
+                <button class="action-btn btn-reset" onclick="resetarMemoria()">Resetar Todos os Padrões</button>
             </div>
 
             <div class="panel-group" style="flex:1; display:flex; flex-direction:column;">
@@ -248,6 +418,7 @@
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
         let startX, startY, endX, endY;
+        let thumbToken = Date.now();
 
         function log(msg) {
             const consoleBox = document.getElementById('consoleLog');
@@ -320,6 +491,7 @@
                     document.getElementById('btnModeUse').classList.toggle('active', modo === 'use');
                     document.getElementById('trainPanel').style.display = (modo === 'train') ? 'block' : 'none';
                     log(`Modo alterado para: ${modo.toUpperCase()}`);
+                    atualizarVisualizacoes();
                 } else {
                     log(`ERRO: ${data.message}`);
                 }
@@ -332,9 +504,20 @@
                 .then(data => {
                     if(data.status === 'success') {
                         log(data.message);
+                        thumbToken = Date.now();
+                        atualizarVisualizacoes();
                     } else {
                         log(`ERRO: ${data.message}`);
                     }
+                });
+        }
+
+        function zerarContadores() {
+            fetch('/api/reset_stats', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    log('Contadores zerados.');
+                    atualizarVisualizacoes();
                 });
         }
 
@@ -345,12 +528,112 @@
                     .then(data => {
                         if (data.status === 'success') {
                             log(data.message);
-                            alterarModo('train'); // Força a volta para o modo treinamento
+                            thumbToken = Date.now();
+                            alterarModo('train');
+                            atualizarVisualizacoes();
                         } else {
                             log(`ERRO: ${data.message}`);
                         }
                     });
             }
+        }
+
+        function atualizarVisualizacoes() {
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => {
+                    // Atualiza os contadores numéricos (Frango Bom vs Frango Ruim)
+                    if (data.stats) {
+                        const bons = data.stats.corretos || 0;
+                        const ruins = data.stats.errados || 0;
+                        const total = data.stats.total || 0;
+
+                        document.getElementById('countCorreto').innerText = bons;
+                        document.getElementById('countErrado').innerText = ruins;
+                        document.getElementById('countTotal').innerText = total;
+
+                        const taxaElem = document.getElementById('taxaAprovado');
+                        if (total > 0) {
+                            const pct = ((bons / total) * 100).toFixed(1);
+                            taxaElem.innerText = `${pct}%`;
+                            taxaElem.style.color = (pct >= 80) ? '#4ade80' : '#f87171';
+                        } else {
+                            taxaElem.innerText = '100%';
+                            taxaElem.style.color = '#4ade80';
+                        }
+                    }
+
+                    // Atualiza a barra de status principal
+                    const badge = document.getElementById('liveStatusBadge');
+                    const status = data.current_status || 'VAZIO';
+
+                    badge.className = 'status-badge-lg';
+                    if (data.mode === 'train') {
+                        badge.classList.add('badge-treino');
+                        badge.innerText = 'MODO TREINAMENTO';
+                    } else if (status.includes('BOM')) {
+                        badge.classList.add('badge-correto');
+                        badge.innerText = status;
+                    } else if (status.includes('RUIM')) {
+                        badge.classList.add('badge-errado');
+                        badge.innerText = status;
+                    } else {
+                        badge.classList.add('badge-vazio');
+                        badge.innerText = 'ESTEIRA VAZIA';
+                    }
+
+                    // 1. Atualiza card FRANGO BOM
+                    const imgC = document.getElementById('imgCorreto');
+                    const emptyC = document.getElementById('emptyCorreto');
+                    const badgeC = document.getElementById('badgeCorreto');
+                    if (data.has_correto) {
+                        imgC.src = '/api/reference_image/correto?' + thumbToken;
+                        imgC.style.display = 'block';
+                        emptyC.style.display = 'none';
+                        badgeC.className = 'ref-badge badge-ok';
+                        badgeC.innerText = 'Salvo ✓';
+                    } else {
+                        imgC.style.display = 'none';
+                        emptyC.style.display = 'block';
+                        badgeC.className = 'ref-badge badge-missing';
+                        badgeC.innerText = 'Não salvo';
+                    }
+
+                    // 2. Atualiza card FRANGO RUIM
+                    const imgE = document.getElementById('imgErrado');
+                    const emptyE = document.getElementById('emptyErrado');
+                    const badgeE = document.getElementById('badgeErrado');
+                    if (data.has_errado) {
+                        imgE.src = '/api/reference_image/errado?' + thumbToken;
+                        imgE.style.display = 'block';
+                        emptyE.style.display = 'none';
+                        badgeE.className = 'ref-badge badge-ok';
+                        badgeE.innerText = 'Salvo ✓';
+                    } else {
+                        imgE.style.display = 'none';
+                        emptyE.style.display = 'block';
+                        badgeE.className = 'ref-badge badge-missing';
+                        badgeE.innerText = 'Não salvo';
+                    }
+
+                    // 3. Atualiza card ESTEIRA VAZIA
+                    const imgV = document.getElementById('imgVazio');
+                    const emptyV = document.getElementById('emptyVazio');
+                    const badgeV = document.getElementById('badgeVazio');
+                    if (data.has_vazio) {
+                        imgV.src = '/api/reference_image/vazio?' + thumbToken;
+                        imgV.style.display = 'block';
+                        emptyV.style.display = 'none';
+                        badgeV.className = 'ref-badge badge-ok';
+                        badgeV.innerText = 'Salvo ✓';
+                    } else {
+                        imgV.style.display = 'none';
+                        emptyV.style.display = 'block';
+                        badgeV.className = 'ref-badge badge-missing';
+                        badgeV.innerText = 'Não salvo';
+                    }
+                })
+                .catch(() => {});
         }
 
         window.onload = function() {
@@ -367,7 +650,11 @@
                         select.appendChild(opt);
                     });
                     if (data.mode) alterarModo(data.mode);
+                    atualizarVisualizacoes();
                 });
+
+            // Polling de 350ms para atualizar o status em tempo real e contadores
+            setInterval(atualizarVisualizacoes, 350);
         };
 
         function mudarCamera(camId) {
